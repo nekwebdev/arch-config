@@ -1,0 +1,91 @@
+---
+- name: Install AUR snapper packages
+  aur:
+    name:
+      - snapper-gui
+      - snap-pac-grub
+    user: "{{ user.name }}"
+  tags:
+    - snapper
+
+- name: Create pacman hook directory
+  file:
+    path: /etc/pacman.d/hooks
+    state: directory
+  tags:
+    - snapper
+
+- name: Create pacman hook for backup of EFI partition
+  copy:
+    src: 50-bootbackup.hook
+    dest: /etc/pacman.d/hooks/50-bootbackup.hook
+  tags:
+    - snapper
+
+- name: "Check for snapper {{ snapper_name }} config"
+  stat:
+    path: "/etc/snapper/configs/{{ snapper_name }}"
+  register: snapper_config
+  tags:
+    - snapper
+
+- name: Install snapper
+  pacman:
+    name:
+      - snapper
+      - rsync
+    state: present
+  tags:
+    - snapper
+
+- block:
+    - name: Unmount snapshots subvolume
+      command: umount /.snapshots
+
+    - name: Delete /.snapshots directory
+      file:
+        path: /.snapshots
+        state: absent
+
+    - name: "Create snapper {{ snapper_name }} config"
+      command: "snapper -c {{ snapper_name }} create-config /"
+
+    - name: "Delete /.snapshots subvolume"
+      command: "btrfs su del /.snapshots"
+
+    - name: Create /.snapshots directory
+      file:
+        path: /.snapshots
+        mode: "0750"
+        group: "{{ user.name }}"
+        state: present
+
+    - name: Mount the @snapshots subvolume
+      command: "mount -a"
+
+    - name: Set our btrfs snapshots schedule
+      lineinfile:
+        path: "/etc/snapper/configs/{{ snapper_name }}"
+        regexp: "^{{ item.entry }}="
+        line: '{{ item.entry }}="{{ item.value }}"'
+        state: present
+        create: yes
+      with_items:
+        - { entry: TIMELINE_LIMIT_HOURLY, value: 5 }
+        - { entry: TIMELINE_LIMIT_DAILY, value: 7 }
+        - { entry: TIMELINE_LIMIT_WEEKLY, value: 0 }
+        - { entry: TIMELINE_LIMIT_MONTHLY, value: 0 }
+        - { entry: TIMELINE_LIMIT_YEARLY, value: 0 }
+
+    - name: Enable timers
+      service:
+        name: "{{ item }}"
+        enabled: yes
+        state: started
+      with_items:
+        - snapper-timeline.timer
+        - snapper-cleanup.timer
+
+  when: not snapper_config.stat.exists
+  tags:
+    - snapper
