@@ -1,10 +1,11 @@
 ---
 - name: Install AUR snapper packages
   aur:
-    name:
-      - snapper-gui
-      - snap-pac-grub
+    name: "{{ Item }}"
     user: "{{ user.name }}"
+  with_items:
+    - snapper-gui
+    - snap-pac-grub
   tags:
     - snapper
 
@@ -31,10 +32,11 @@
 
 - name: Install snapper
   pacman:
-    name:
-      - snapper
-      - rsync
+    name: "{{ Item }}"
     state: present
+  with_items:
+    - snapper
+    - rsync
   tags:
     - snapper
 
