@@ -42,12 +42,20 @@
   tags:
     - user
 
-- name: Create AUR directory
+- name: Create user socket directory
   file:
-    path: "/home/{{ user.name }}/{{ aur.dir }}"
+    path: "/run/user/{{ user.uid }}"
     state: directory
     owner: "{{ user.name }}"
     group: "{{ user.group }}"
+    mode: 0700
   tags:
-    - aur
+    - user
+
+- name: Start user systemd instance
+  service:
+    name: "user@{{ user.uid }}"
+    state: started
+  notify: stop systemd per-user instance
+  tags:
     - user

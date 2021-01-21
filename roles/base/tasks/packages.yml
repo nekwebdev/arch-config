@@ -21,7 +21,8 @@
 - name: Install AUR base packages
   aur:
     name: "{{ aur.packages }}"
-    user: "{{ user.name }}"
+  become: true
+  become_user: aur_builder
   tags:
     - aur
     - packages

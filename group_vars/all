@@ -20,15 +20,42 @@ snapper_name: root
 
 # packages
 aur:
-  dir: aur
   packages:
-    - yay
-    - downgrade
-    - zplug
-    - miller
-    - myrepos
-    - ctmg
-    - spiped
+    # - yay
+    # - downgrade
+    # - zplug
+    # - miller
+    # - myrepos
+    # - ctmg
+    # - spiped
+
+base_packages:
+  - moreutils
+  - dateutils
+  # - man-db
+  # - man-pages
+  # - pacman-contrib
+  # - fwupd
+  # - dmidecode
+  # - tmux
+  # - rsync
+  # - bc
+  # - arch-wiki-lite
+  # - arch-wiki-docs
+  # - python-keyring
+  # - python-secretstorage
+  # - tig
+  # - ruby
+  # - pv
+  # - minicom
+  # - jq
+  # - screen
+  # - termdown
+  # - fzf
+  # - cpulimit
+
+journal:
+  max_size: 500M
 
 interception:
   caps2esc:
@@ -76,35 +103,6 @@ editors:
 
 video_drivers:
   - libva-intel-driver
-
-base_packages:
-  - base-devel
-  - man-db
-  - man-pages
-  - pacman-contrib
-  - fwupd
-  - dmidecode
-  - tmux
-  - git
-  - rsync
-  - coreutils
-  - moreutils
-  - dateutils
-  - bc
-  - ranger
-  - arch-wiki-lite
-  - arch-wiki-docs
-  - python-keyring
-  - python-secretstorage
-  - tig
-  - ruby
-  - pv
-  - minicom
-  - jq
-  - screen
-  - termdown
-  - fzf
-  - cpulimit
 
 filesystem_packages:
   - dosfstools
@@ -224,9 +222,6 @@ cryptshot:
         interval: 6
       - level: monthly
         interval: 3
-
-journal:
-  max_size: 500M
 
 udisks:
   auto_mount: False

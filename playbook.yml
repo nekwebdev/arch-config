@@ -10,3 +10,4 @@
 
   roles:
     - { role: base, tags: ["base"] }
+    - { role: gnupg, tags: ["gnupg"] }
