@@ -1,0 +1,56 @@
+---
+- name: Install video drivers
+  pacman:
+    name: "{{ video_drivers }}"
+
+- name: Install Xorg
+  pacman: name=xorg-server
+
+# manually start x server
+# - name: Install Xinit
+#   pacman: name=xorg-xinit
+
+# keyboard keys modifier and it's gui app
+- name: Install xmodmap
+  pacman:
+    name: [xorg-xmodmap, xkeycaps]
+
+# display information utility for X used as a neofetch option
+- name: Install xdpyinfo
+  pacman: name=xorg-xdpyinfo
+
+# add to aliases at some point
+# xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'
+# gui to see keypress x events
+- name: Install xev
+  pacman: name=xorg-xev
+
+# register X sessions in system utmp/utmpx databases
+- name: Install xorg-sessreg
+  pacman: name=xorg-sessreg
+
+# command-line utility to print information about windows on an X server
+# used as a neofetch and picom option
+- name: Install xorg-xwininfo
+  pacman: name=xorg-xwininfo
+
+# automating kb and mouse
+# - name: Install xautomation
+#   pacman: name=xautomation
+
+- name: Add user to video group
+  user: name={{ user.name }} groups=video append=yes
+  tags:
+    - user
+
+- name: Set keyboard layout
+  template: src=00-keyboard.conf dest=/etc/X11/xorg.conf.d/00-keyboard.conf
+  when: libinput.keyboard_layout is defined
+  tags:
+    - libinput
+
+- include: unclutter.yml
+- include: autorandr.yml
+- include: srandrd.yml
+# - include: autocutsel.yml
+- include: xdg.yml

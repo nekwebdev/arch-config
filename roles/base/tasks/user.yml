@@ -30,9 +30,9 @@
     - user
 
 - name: Install logrotate
-  pacman:
-    name: logrotate
-    state: present
+  pacman: name=logrotate
+  tags:
+    - user
 
 - name: Push logrotate config for user logs
   template:

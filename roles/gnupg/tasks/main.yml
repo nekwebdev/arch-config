@@ -1,8 +1,6 @@
 ---
 - name: Install gnupg
-  pacman:
-    name: gnupg
-    state: present
+  pacman: name=gnupg
 
 - name: Enable gpg-agent.socket
   systemd:

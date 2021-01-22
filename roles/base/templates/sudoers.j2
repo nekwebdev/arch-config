@@ -8,3 +8,5 @@ root ALL=(ALL) ALL
 {% for entry in passwordless_sudo %}
 %wheel ALL=(ALL) NOPASSWD:{{ entry }}
 {% endfor %}
+
+@includedir /etc/sudoers.d

@@ -56,7 +56,7 @@
         path: /.snapshots
         mode: "0750"
         group: "{{ user.name }}"
-        state: present
+        state: directory
 
     - name: Mount the @snapshots subvolume
       command: "mount -a"
@@ -87,3 +87,11 @@
   when: not snapper_config.stat.exists
   tags:
     - snapper
+
+- name: Add user to snapper config
+  lineinfile:
+    dest: "/etc/snapper/configs/{{ snapper_name }}"
+    regexp: "^ALLOW_USERS="
+    line: 'ALLOW_USERS="{{ user.name }}"'
+    state: present
+    create: yes

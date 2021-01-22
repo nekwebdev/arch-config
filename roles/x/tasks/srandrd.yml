@@ -1,0 +1,8 @@
+---
+- name: Install srandrd
+  aur: name=srandrd
+  become: true
+  become_user: aur_builder
+  tags:
+    - aur
+    - srandrd

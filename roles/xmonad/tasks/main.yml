@@ -1,0 +1,21 @@
+---
+- name: Install xmonad and xmobar
+  pacman:
+    name:
+      - xmonad
+      - xmonad-contrib
+      - xmobar
+      - dmenu
+      - picom
+      - nitrogen
+
+# - name: Install py3status
+#   pacman: name=py3status state=present
+
+- name: Verify header in default applications file
+  lineinfile:
+    dest: /etc/xdg/mimeapps.list
+    state: present
+    line: "[Default Applications]"
+    insertbefore: BOF
+    create: yes

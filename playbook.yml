@@ -11,3 +11,21 @@
   roles:
     - { role: base, tags: ["base"] }
     - { role: gnupg, tags: ["gnupg"] }
+    - { role: cron, tags: ["cron"] }
+    - { role: lastpass, tags: ["lastpass"] }
+    - { role: ssh, tags: ["ssh"] }
+    - { role: dotfiles, tags: ["dotfiles"] }
+    - {
+        role: interception,
+        tags: ["interception"],
+        when: "interception is defined",
+      }
+    - { role: fonts, tags: ["fonts"] }
+    - { role: x, tags: ["x"] }
+    - { role: lightdm, tags: ["lightdm"], when: "display_manager == 'lightdm'" }
+    - {
+        role: xmonad,
+        tags: ["xmonad"],
+        when: "desktop_environment == 'xmonad'",
+      }
+    - { role: laptop, tags: ["laptop"] }

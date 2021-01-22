@@ -1,19 +1,31 @@
 ---
 # base
-hostname: zephy
+hostname: thehost
 kernel_parameters: "quiet consoleblank=600"
 bootloader: grub
 
+# sshd
+ssh:
+  port: 22
+  # name of the ssh key entry in lastpass
+  user_key: id_rsa
+  enable_sshd: False
+
 # user
 user:
-  name: oj
+  name: mememe
   uid: 1000
-  group: oj
+  group: mememe
   shell: /usr/bin/fish
-  email: nekwebdev@gmail.com
+  email: email@email.com
+  lpass_username: email@email.com
   log:
     dir: log
     rotate: 8
+
+# sudo
+# passwordless_sudo:
+#   - /usr/bin/openvpn*
 
 # snapper
 snapper_name: root
@@ -21,7 +33,7 @@ snapper_name: root
 # packages
 aur:
   packages:
-    # - yay
+    - yay
     # - downgrade
     # - zplug
     # - miller
@@ -30,15 +42,30 @@ aur:
     # - spiped
 
 base_packages:
+  # Base utilities
+  - rsync
   - moreutils
   - dateutils
+
+  # Terminal utilities
+  - kitty
+  - neofetch
+
+  # System Monitoring
+  - sysstat
+  - glances
+  - htop
+  - lsof
+  - strace
+  - smartmontools
+  - progress
+
   # - man-db
   # - man-pages
   # - pacman-contrib
   # - fwupd
   # - dmidecode
   # - tmux
-  # - rsync
   # - bc
   # - arch-wiki-lite
   # - arch-wiki-docs
@@ -54,8 +81,15 @@ base_packages:
   # - fzf
   # - cpulimit
 
+# journal
 journal:
   max_size: 500M
+
+# dotfiles
+dotfiles:
+  # url: git@github.com:pigmonkey/dotfiles.git
+  destination: ".dotfiles"
+  rcup_flags: -fx README.md
 
 interception:
   caps2esc:
@@ -63,28 +97,52 @@ interception:
     mode: 1
     delay: 20000
 
-dotfiles:
-  url: git@github.com:pigmonkey/dotfiles.git
-  destination: projects/dotfiles
-  rcup_flags: -fx README.md
-
-ssh:
-  port: 22
-  user_key: /root/id_rsa
-  enable_sshd: False
-
 gnupg:
   enable_agent: True
   emulate_ssh: True
 
-mail:
-  sync_tool: isync
-  sync_pim: True
-  sync_taskwarrior: True
-  sync_notmuch: False
-  sync_time: 5min
-  sync_boot_delay: 2min
-  sync_on: trusted
+base_fonts:
+  # - adobe-source-code-pro-fonts
+  # - cantarell-fonts
+  # - gsfonts
+  # - noto-fonts
+  # - terminus-font
+  # - tex-gyre-fonts
+  # - ttf-caladea
+  # - ttf-carlito
+  - ttf-dejavu
+  # - ttf-droid
+  # - ttf-fira-mono
+  # - ttf-ibm-plex
+  # - ttf-inconsolata
+  # - ttf-liberation
+  # - ttf-opensans
+  # - ttf-ubuntu-font-family
+
+aur_fonts:
+  - nerd-fonts-fira-code
+  # - ttf-bitstream-charter
+  # - ttf-cooper-hewitt
+  # - ttf-courier-prime
+  # - ttf-heuristica
+  # - ttf-merriweather
+  # - ttf-merriweather-sans
+  # - ttf-oswald
+  # - ttf-quintessential
+  # - ttf-signika
+
+video_drivers:
+  - nvidia
+  - nvidia-settings
+
+libinput:
+  keyboard_layout: "fr"
+  natural_scroll: "true"
+  accel_speed: "0.09"
+
+display_manager: lightdm
+
+desktop_environment: xmonad
 
 network:
   spoof_mac: True
@@ -99,10 +157,7 @@ network:
     - faeec88c-79ec-4840-ab25-ea356af8a81b
 
 editors:
-  - gvim
-
-video_drivers:
-  - libva-intel-driver
+  - vim
 
 filesystem_packages:
   - dosfstools
@@ -118,9 +173,6 @@ browser_choices:
   - play
   - qcode
   - "| xclip -selection c"
-
-passwordless_sudo:
-  - /usr/bin/openvpn*
 
 tarsnapper:
   deltas: 1h 1d 7d 30d 365d
@@ -242,83 +294,6 @@ goesimage:
   run_on: trusted
   flags: -w -e
 
-libinput:
-  middle_click_scroll: 12
-  button_mapping: "1 2 3 4 5 6 7 8 9 10 11 2"
-
-display_manager: lightdm
-gdm:
-  sound: False
-  font_scaling_factor: 1
-  logo_path: False
-  touchpad:
-    tap_to_click: True
-  accessibility_menu: True
-
-desktop_environment: i3
-gnome:
-  night_light:
-    enabled: True
-    color_temperature: 4000 # in Kelvin
-  date_time:
-    show_date_in_clock: True
-    show_weeks_in_calendar: True
-  battery:
-    show_percentage: True
-  power:
-    sleep_timeout_when_computer_on_ac: 3600 # in seconds
-    timeout_action_when_computer_on_ac: suspend
-    sleep_timeout_when_computer_on_battery: 1800 # in seconds
-    timeout_action_when_computer_on_battery: suspend
-    power_button_action: suspend
-  touchpad:
-    tap_to_click: True
-    natural_scrolling: True
-    disabled_while_typing: True
-  online_accounts_support: True
-  lock_screen:
-    automatic_lock: True
-    lock_screen_after_blank_for: 0 # in seconds
-    show_notifications: True
-    show_full_name_of_user: True
-  theme:
-    theme_name: Adwaita
-    icon_theme_name: Adwaita
-    font_name: Dejavu Sans 13
-    dark_variant: True
-  gnome_shell:
-    disable_top_left_hot_corner: False
-    extensions_support: True
-
-base_fonts:
-  - adobe-source-code-pro-fonts
-  - cantarell-fonts
-  - gsfonts
-  - noto-fonts
-  - terminus-font
-  - tex-gyre-fonts
-  - ttf-caladea
-  - ttf-carlito
-  - ttf-dejavu
-  - ttf-droid
-  - ttf-fira-mono
-  - ttf-ibm-plex
-  - ttf-inconsolata
-  - ttf-liberation
-  - ttf-opensans
-  - ttf-ubuntu-font-family
-
-aur_fonts:
-  - ttf-bitstream-charter
-  - ttf-cooper-hewitt
-  - ttf-courier-prime
-  - ttf-heuristica
-  - ttf-merriweather
-  - ttf-merriweather-sans
-  - ttf-oswald
-  - ttf-quintessential
-  - ttf-signika
-
 syncthing:
   run_on: trusted
   open_ports: true
@@ -331,6 +306,3 @@ units:
 
 pkgfile:
   run_on: trusted
-
-hardened:
-  enable_namespaces: true
