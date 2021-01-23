@@ -2,24 +2,42 @@
 - name: Install OpenSSH
   pacman: name=openssh
 
-- name: Push OpenSSH daemon configuration file
-  template: src=sshd_config.j2 dest=/etc/ssh/sshd_config
+- name: Disable some ssh options
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^{{ item }}"
+    line: "{{ item }} no"
+    state: present
+  with_items:
+    - PasswordAuthentication
+    - PermitRootLogin
+    - PermitEmptyPasswords
+    - ChallengeResponseAuthentication
+    - KerberosAuthentication
+    - GSSAPIAuthentication
+    - X11Forwarding
+    - PermitUserEnvironment
 
-- name: Create OpenSSH systemd unit file directory
-  file: path=/etc/systemd/system/sshd.socket.d state=directory
+- name: Limit ssh max tries
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^MaxAuthTries"
+    line: "MaxAuthTries {{ ssh.max_tries }}"
+    state: present
 
-- name: Push OpenSSH socket unit file
-  template: src=sshd-socket-override.conf.j2 dest=/etc/systemd/system/sshd.socket.d/override.conf
-  notify:
-    - reload systemd config
-    - restart sshd
+- name: Set ssh grace time
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^LoginGraceTime"
+    line: "LoginGraceTime {{ ssh.grace_time }}"
+    state: present
 
 - name: Enable and start OpenSSH
-  service: name=sshd.socket enabled=yes state=started
+  service: name=sshd.service enabled=yes state=started
   when: ssh.enable_sshd is defined and ssh.enable_sshd == True
 
 - name: Disable and stop OpenSSH
-  service: name=sshd.socket enabled=no state=stopped
+  service: name=sshd.service enabled=no state=stopped
   when: ssh.enable_sshd is defined and ssh.enable_sshd == False
 
 - name: Install sshfs
@@ -44,7 +62,8 @@
 
 - name: Make directory for user SSH key
   file:
-    path: "/home/{{ user.name }}/.ssh state=directory"
+    path: "/home/{{ user.name }}/.ssh"
+    state: directory
     owner: "{{ user.name }}"
     group: "{{ user.group }}"
     mode: "0700"
@@ -56,10 +75,10 @@
 
 - block:
     - name: Save public key
-      shell: "/home/{{ user.name }}/.scripts/lpass-wrapper.sh show {{ ssh.user_key }} --field 'Public Key' > /home/{{ user.name }}/.ssh/{{ ssh.user_key }}.pub"
+      shell: "lpass show {{ ssh.user_key }} --field 'Public Key' > /home/{{ user.name }}/.ssh/{{ ssh.user_key }}.pub"
 
     - name: Save private key
-      shell: "/home/{{ user.name }}/.scripts/lpass-wrapper.sh show {{ ssh.user_key }} --field 'Private Key' > /home/{{ user.name }}/.ssh/{{ ssh.user_key }}"
+      shell: "lpass show {{ ssh.user_key }} --field 'Private Key' > /home/{{ user.name }}/.ssh/{{ ssh.user_key }}"
 
     - name: Fix permissions and ownership
       file:
@@ -70,8 +89,5 @@
       with_items:
         - { name: "{{ ssh.user_key }}", mode: "0600" }
         - { name: "{{ ssh.user_key }}.pub", mode: "0644" }
-
-    - name: Logout from lastpass
-      command: lpass logout
 
   when: ssh.user_key is defined and not ssh_key.stat.exists

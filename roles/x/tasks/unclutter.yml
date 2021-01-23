@@ -1,5 +1,5 @@
 ---
-- name: Install unclutter_xfixes
-  pacman: name=unclutter-xfixes state=present
+- name: Install unclutter
+  pacman: name=unclutter state=present
   tags:
     - unclutter

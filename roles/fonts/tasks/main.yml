@@ -45,6 +45,7 @@
 - name: Install AUR fonts
   aur:
     name: "{{ aur_fonts }}"
-    user: "{{ user.name }}"
+  become: yes
+  become_user: aur_builder
   tags:
     - aur

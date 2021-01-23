@@ -7,6 +7,8 @@ bootloader: grub
 # sshd
 ssh:
   port: 22
+  max_tries: 3
+  grace_time: 20
   # name of the ssh key entry in lastpass
   user_key: id_rsa
   enable_sshd: False
@@ -24,7 +26,7 @@ user:
     rotate: 8
 
 # sudo
-# passwordless_sudo:
+passwordless_sudo: []
 #   - /usr/bin/openvpn*
 
 # snapper
@@ -50,6 +52,7 @@ base_packages:
   # Terminal utilities
   - kitty
   - neofetch
+  - neovim
 
   # System Monitoring
   - sysstat
@@ -111,6 +114,7 @@ base_fonts:
   # - ttf-caladea
   # - ttf-carlito
   - ttf-dejavu
+  - powerline-fonts
   # - ttf-droid
   # - ttf-fira-mono
   # - ttf-ibm-plex
@@ -133,6 +137,7 @@ aur_fonts:
 
 video_drivers:
   - nvidia
+  - nvidia-utils
   - nvidia-settings
 
 libinput:

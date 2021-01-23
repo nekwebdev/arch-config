@@ -12,6 +12,7 @@
   pacman:
     name:
       - fish
+      - pkgfile
     state: present
   tags:
     - shell

@@ -61,7 +61,7 @@
     - name: Mount the @snapshots subvolume
       command: "mount -a"
 
-    - name: Set our btrfs snapshots schedule
+    - name: Set our btrfs snapshots schedule and allowed user
       lineinfile:
         path: "/etc/snapper/configs/{{ snapper_name }}"
         regexp: "^{{ item.entry }}="
@@ -69,6 +69,7 @@
         state: present
         create: yes
       with_items:
+        - { entry: ALLOW_USERS, value: "{{ user.name }}" }
         - { entry: TIMELINE_LIMIT_HOURLY, value: 5 }
         - { entry: TIMELINE_LIMIT_DAILY, value: 7 }
         - { entry: TIMELINE_LIMIT_WEEKLY, value: 0 }
@@ -87,11 +88,3 @@
   when: not snapper_config.stat.exists
   tags:
     - snapper
-
-- name: Add user to snapper config
-  lineinfile:
-    dest: "/etc/snapper/configs/{{ snapper_name }}"
-    regexp: "^ALLOW_USERS="
-    line: 'ALLOW_USERS="{{ user.name }}"'
-    state: present
-    create: yes

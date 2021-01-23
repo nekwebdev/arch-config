@@ -30,37 +30,10 @@
   tags:
     - kernelparams
 
-- name: Create aur_builder user
-  user:
-    name: aur_builder
-    group: wheel
-    uid: 1001
-  tags:
-    - aur
-    - user
-
-- name: Add aur_builder to NOPASSWD sudo
-  lineinfile:
-    path: /etc/sudoers.d/11-install-aur_builder
-    line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
-    create: yes
-    validate: "visudo -cf %s"
-  tags:
-    - aur
-    - user
-
-# install yay now so that aur module can use it
-- name: Install yay
-  aur: name=yay
-  become: true
-  become_user: aur_builder
-  tags:
-    - aur
-    - user
-
 - include: shell.yml
 - include: user.yml
 - include: sudo.yml
+- include: yay.yml
 - include: snapper.yml
 - include: packages.yml
 - include: journal.yml
