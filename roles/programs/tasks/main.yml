@@ -1,0 +1,15 @@
+---
+- name: Install programs from packages
+  pacman:
+    name: "{{ programs.packages }}"
+  tags:
+    - programs
+
+- name: Install programs from aur
+  aur:
+    name: "{{ programs.aur }}"
+  become: true
+  become_user: aur_builder
+  tags:
+    - aur
+    - pass

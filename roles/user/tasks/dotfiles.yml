@@ -1,0 +1,64 @@
+---
+- name: Install stow
+  pacman: name=stow
+  when: dotfiles.stow is defined
+  tags:
+    - dotfiles
+    - user
+
+- name: Check if /home/{{ user.name }}/{{ dotfiles.destination }} exists
+  stat:
+    path: "/home/{{ user.name }}/{{ dotfiles.destination }}"
+  register: dotfiles_folder
+  tags:
+    - dotfiles
+    - user
+
+- block:
+    - name: Clone user public dotfiles
+      git:
+        repo: "{{ dotfiles.url }}"
+        dest: "/home/{{ user.name }}/{{ dotfiles.destination }}"
+        accept_hostkey: yes
+        update: no
+      when: dotfiles.url is defined and not dotfiles.private
+      become: true
+      become_user: "{{ user.name }}"
+
+    - name: Clone user private dotfiles
+      expect:
+        command: "git clone {{ dotfiles.url }} /home/{{ user.name }}/{{ dotfiles.destination }}"
+        responses:
+          Username: "{{ dotfiles.username }}"
+          password: "{{ github_password }}"
+      when: dotfiles.url is defined and dotfiles.private
+      become: true
+      become_user: "{{ user.name }}"
+
+    - name: Create dotfiles directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items: dotfiles.stowfolders
+      when: dotfiles.stow.folders is defined
+      become: true
+      become_user: "{{ user.name }}"
+      tags:
+        - dotfiles
+        - user
+
+    - name: Install user dotfiles
+      command: "stow -t /home/{{ user.name}} *"
+      args:
+        chdir: "/home/{{ user.name }}/{{ dotfiles.destination }}"
+      when: dotfiles.stow is defined
+      become: true
+      become_user: "{{ user.name }}"
+      tags:
+        - dotfiles
+        - user
+
+  when: not dotfiles_folder.stat.exists
+      tags:
+        - dotfiles
+        - user

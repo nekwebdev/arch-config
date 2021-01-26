@@ -1,6 +1,10 @@
 ---
 - name: Install gnupg
-  pacman: name=gnupg
+  pacman:
+    name:
+      - gnupg
+      - qrencode
+      - zbar
 
 - name: Enable gpg-agent.socket
   systemd:

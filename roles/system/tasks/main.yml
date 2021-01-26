@@ -1,0 +1,119 @@
+---
+- name: Create pacman hook directory
+  file:
+    path: /etc/pacman.d/hooks
+    state: directory
+  tags:
+    - pacman
+    - system
+
+- name: Copy pacman configuration file
+  copy:
+    src: pacman.conf
+    dest: /etc/pacman.conf
+  tags:
+    - pacman
+    - system
+
+- name: Refresh pacman mirrors
+  pacman:
+    update_cache: yes
+  tags:
+    - pacman
+    - system
+
+- name: Use all cores when compressing packages
+  lineinfile:
+    dest: /etc/makepkg.conf
+    regexp: "^COMPRESSXZ"
+    line: "COMPRESSXZ=(xz -c -z - --threads=0)"
+  tags:
+    - pacman
+    - system
+
+- name: Push pacman cache cleanup service
+  copy:
+    src: paccache.service
+    dest: /etc/systemd/system/paccache.service
+  notify:
+    - reload systemd config
+  tags:
+    - pacman
+    - system
+
+- name: Push pacman cache cleanup timer
+  copy:
+    src: paccache.timer
+    dest: /etc/systemd/system/paccache.timer
+  notify:
+    - reload systemd config
+    - restart paccache
+  tags:
+    - pacman
+    - system
+
+- name: Enable and start pacman cache cleanup timer
+  service:
+    name: paccache.timer
+    enabled: yes
+    state: started
+  tags:
+    - pacman
+    - system
+
+- name: Install inetutils for hostname
+  pacman:
+    name: inetutils
+    state: present
+  tags:
+    - pacman
+    - system
+
+- name: Set the hostname
+  hostname:
+    name: "{{ hostname }}"
+  when: hostname is defined
+  tags:
+    - pacman
+    - system
+
+- name: Set kernel parameters
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT"
+    state: present
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ kernel_parameters }}"'
+  when: kernel_parameters is defined and bootloader == 'grub'
+  notify:
+    - rebuild grub
+  tags:
+    - pacman
+    - system
+    - kernelparams
+
+- name: Create journal config directory
+  file:
+    path: /etc/systemd/journald.conf.d
+    state: directory
+  tags:
+    - journal
+    - system
+
+- name: Push journal max size config
+  template:
+    src: 00-journal-size.conf.j2
+    dest: /etc/systemd/journald.conf.d/00-journal-size.conf
+  when: journal is defined and journal.max_size is defined
+  tags:
+    - journal
+    - system
+
+
+- name: Install universal base packages
+  pacman:
+    name: "{{ base_packages }}"
+    state: present
+  tags:
+    - pacman
+    - packages
+    - system

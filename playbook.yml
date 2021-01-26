@@ -8,12 +8,17 @@
       private: yes
       confirm: yes
 
+    - name: github_password
+      prompt: "Enter github account password for private dotfiles and password-store"
+      private: yes
+
   roles:
-    - { role: base, tags: ["base"] }
+    - { role: system, tags: ["system"] }
+    - { role: user, tags: ["user"] }
     - { role: gnupg, tags: ["gnupg"] }
     - { role: cron, tags: ["cron"] }
     - { role: ssh, tags: ["ssh"] }
-    - { role: dotfiles, tags: ["dotfiles"] }
+    - { role: pass, tags: ["pass"] }
     - {
         role: interception,
         tags: ["interception"],
@@ -27,4 +32,6 @@
         tags: ["xmonad"],
         when: "desktop_environment == 'xmonad'",
       }
+    - { role: programs, tags: ["programs"] }
     - { role: laptop, tags: ["laptop"] }
+    - { role: snapper, tags: ["snapper"] }

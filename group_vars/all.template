@@ -1,29 +1,51 @@
 ---
-# base
+# make sure to configure the next sections
+user:
+  name: mememe # EDIT ME
+  uid: 1000
+  group: mememe # EDIT ME
+  shell: /usr/bin/fish
+  email: email@email.com # EDIT ME
+  gitname: nekwebdev # EDIT ME
+  gitemail: email@email.com # EDIT ME
+  log:
+    dir: log
+    rotate: 8
+
 hostname: thehost
-kernel_parameters: "quiet consoleblank=600"
-bootloader: grub
+
+wallpapers:
+  url: https://gitlab.com/dwt1/wallpapers.git
+
+# dotfiles, I am using stow so the playbook makes sure to create the folders and sym links first
+dotfiles:
+  url: https://github.com/nekwebdev/.dotfiles.git # EDIT ME
+  destination: ".dotfiles"
+  private: True
+  username: nekwebdev # EDIT ME, must be the github account username
+  stow:
+    folders:
+      - /home/{{ user.name }}/.xmonad
+      - /home/{{ user.name }}/.config/fish
+      - /home/{{ user.name }}/.config/kitty
+      - /home/{{ user.name }}/.config/gtk-3.0
+      - /home/{{ user.name }}/.config/VSCodium/User
+
+pass:
+  url: https://github.com/nekwebdev/.password-store.git # EDIT ME
+  destination: ".password-store"
+  private: True
+  username: nekwebdev
 
 # sshd
 ssh:
   port: 22
   max_tries: 3
   grace_time: 20
-  # name of the ssh key entry in lastpass
-  user_key: id_rsa
   enable_sshd: False
 
-# user
-user:
-  name: mememe
-  uid: 1000
-  group: mememe
-  shell: /usr/bin/fish
-  email: email@email.com
-  lpass_username: email@email.com
-  log:
-    dir: log
-    rotate: 8
+kernel_parameters: "quiet consoleblank=600"
+bootloader: grub
 
 # sudo
 passwordless_sudo: []
@@ -32,22 +54,20 @@ passwordless_sudo: []
 # snapper
 snapper_name: root
 
-# packages
+# system packages
 aur:
+  helper: paru-bin
   packages:
-    - yay
-    # - downgrade
-    # - zplug
-    # - miller
-    # - myrepos
-    # - ctmg
-    # - spiped
+    - starship-bin
+    - shell-color-script
 
 base_packages:
   # Base utilities
   - rsync
   - moreutils
   - dateutils
+  - exa
+  - lolcat
 
   # Terminal utilities
   - kitty
@@ -88,12 +108,6 @@ base_packages:
 journal:
   max_size: 500M
 
-# dotfiles
-dotfiles:
-  # url: git@github.com:pigmonkey/dotfiles.git
-  destination: ".dotfiles"
-  rcup_flags: -fx README.md
-
 interception:
   caps2esc:
     enabled: True
@@ -114,7 +128,9 @@ base_fonts:
   # - ttf-caladea
   # - ttf-carlito
   - ttf-dejavu
+  - ttf-font-awesome
   - powerline-fonts
+
   # - ttf-droid
   # - ttf-fira-mono
   # - ttf-ibm-plex
@@ -148,6 +164,40 @@ libinput:
 display_manager: lightdm
 
 desktop_environment: xmonad
+
+xorg:
+  theme:
+    packages:
+      - xcursor-simplesoft
+    aur:
+      - nordic-theme.git
+
+window_managers:
+  utils:
+    packages:
+      - dmenu
+      - picom
+      - nitrogen
+      - lxsessions
+      - lxappearance
+      - stalonetray
+      - blueman
+      - pavucontrol
+      - volumeicon
+    aur: []
+  xmonad:
+    packages:
+      - xmonad
+      - xmonad-contrib
+      - xmobar
+    aur: []
+
+programs:
+  packages:
+    - thunar
+  aur:
+    - brave-bin
+    - vscodium-bin
 
 network:
   spoof_mac: True

@@ -1,4 +1,8 @@
 ---
+# install our user shell first
+- include: shell.yml
+
+# create our user
 - name: Create user group
   group:
     name: "{{ user.group }}"
@@ -59,3 +63,46 @@
   notify: stop systemd per-user instance
   tags:
     - user
+
+- name: Create directories for user SSH and gnupg with correct permissions
+  file:
+    path: "/home/{{ user.name }}/{{ item }}"
+    state: directory
+    owner: "{{ user.name }}"
+    group: "{{ user.group }}"
+    mode: "0700"
+  with_items:
+    - .ssh
+    - .gnupg
+
+- name: Set the global git user name
+  community.general.git_config:
+    name: user.name
+    scope: global
+    value: "{{ user.gitname }}"
+
+- name: Set the global git user email
+  community.general.git_config:
+    name: user.email
+    scope: global
+    value: "{{ user.gitemail }}"
+
+- name: Clone wallpapers
+  git:
+    repo: "{{ wallpapers.url }}"
+    dest: "/home/{{ user.name }}/Pictures/wallpapers"
+    accept_hostkey: yes
+    update: no
+  when: wallpapers.url is defined
+  become: true
+  become_user: "{{ user.name }}"
+  
+
+# setup sudo for this user
+- include: sudo.yml
+
+# setup our dotfiles
+- include: dotfiles.yml
+
+# setup our aur_builder user and install an aur helper
+- include: aur_helper.yml

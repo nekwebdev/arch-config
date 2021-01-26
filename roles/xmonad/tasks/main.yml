@@ -1,13 +1,33 @@
 ---
-- name: Install xmonad and xmobar
+- name: Install xmonad and xmobar packages
   pacman:
-    name:
-      - xmonad
-      - xmonad-contrib
-      - xmobar
-      - dmenu
-      - picom
-      - nitrogen
+    name: "{{ window_managers.xmonad.packages }}"
+  tags:
+    - xmonad
+
+- name: Install xmonad and xmobar aur
+  aur:
+    name: "{{ window_managers.xmonad.aur }}"
+  become: true
+  become_user: aur_builder
+  tags:
+    - xmonad
+    - aur
+
+- name: Install window managers package utilities
+  pacman:
+    name: "{{ window_managers.utils.packages }}"
+  tags:
+    - xmonad
+
+- name: Install window managers aur utilities
+  aur:
+    name: "{{ window_managers.utils.aur }}"
+  become: true
+  become_user: aur_builder
+  tags:
+    - xmonad
+    - aur
 
 # - name: Install py3status
 #   pacman: name=py3status state=present
@@ -19,3 +39,5 @@
     line: "[Default Applications]"
     insertbefore: BOF
     create: yes
+  tags:
+    - xmonad

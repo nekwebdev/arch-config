@@ -1,0 +1,51 @@
+---
+- name: Create local ansible modules folder
+  file:
+    path: "/root/.ansible/plugins/modules"
+    state: directory
+  tags:
+    - aur
+    - system
+
+- name: Clone ansible-aur
+  git:
+    repo: https://github.com/nekwebdev/ansible-aur.git
+    dest: "/root/.ansible/plugins/modules/aur"
+    accept_hostkey: yes
+    update: no
+
+- name: Create aur_builder user
+  user:
+    name: aur_builder
+    group: wheel
+  tags:
+    - aur
+    - system
+
+- name: Add aur_builder to NOPASSWD sudo
+  lineinfile:
+    path: /etc/sudoers.d/11-install-aur_builder
+    line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+    create: yes
+    validate: "visudo -cf %s"
+  tags:
+    - aur
+    - user
+
+- name: "Install {{ aur.helper }}"
+  aur: name={{ aur.helper }}
+  become: true
+  become_user: aur_builder
+  tags:
+    - aur
+    - system
+
+- name: Install AUR base packages now
+  aur:
+    name: "{{ aur.packages }}"
+  become: true
+  become_user: aur_builder
+  tags:
+    - aur
+    - system
+    - packages

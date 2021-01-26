@@ -1,0 +1,70 @@
+---
+- name: Install pass
+  pacman:
+    name:
+      - pass
+      - browserpass-chromium
+    state: present
+  tags:
+    - pass
+
+- name: Install pass-otp
+  pacman:
+    name: pass-otp
+    state: present
+  tags:
+    - pass
+
+# - name: Install rofi-pass
+#   pacman:
+#     name: rofi-pass
+#     state: present
+#   tags:
+#     - rofi
+
+- name: Install pass-update
+  aur: name=pass-update
+  become: true
+  become_user: aur_builder
+  tags:
+    - aur
+    - pass
+
+# - name: Install pwgen-passphrase
+#   aur:
+#     name: pwgen-passphrase
+#     user: "{{ user.name }}"
+#   tags:
+#     - aur
+
+- name: Check if /home/{{ user.name }}/{{ pass.destination }} exists
+  stat:
+    path: "/home/{{ user.name }}/{{ pass.destination }}"
+  register: pass_folder
+  tags:
+    - pass
+
+- block:
+    - name: Clone user public password store
+      git:
+        repo: "{{ pass.url }}"
+        dest: "/home/{{ user.name }}/{{ pass.destination }}"
+        accept_hostkey: yes
+        update: no
+      when: pass.url is defined and not pass.private
+      become: true
+      become_user: "{{ user.name }}"
+
+    - name: Clone user private password store
+      expect:
+        command: "git clone {{ pass.url }} /home/{{ user.name }}/{{ pass.destination }}"
+        responses:
+          Username: "{{ pass.username }}"
+          password: "{{ github_password }}"
+      when: pass.url is defined and pass.private
+      become: true
+      become_user: "{{ user.name }}"
+        
+  when: not pass_folder.stat.exists
+      tags:
+        - pass

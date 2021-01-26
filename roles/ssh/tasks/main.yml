@@ -59,35 +59,3 @@
   lineinfile: dest=/etc/profile
     state=present
     line="export SSH_ASKPASS=\"/usr/lib/ssh/x11-ssh-askpass\""
-
-- name: Make directory for user SSH key
-  file:
-    path: "/home/{{ user.name }}/.ssh"
-    state: directory
-    owner: "{{ user.name }}"
-    group: "{{ user.group }}"
-    mode: "0700"
-
-- name: Check if the ssh key is present
-  stat: path=/home/{{ user.name }}/.ssh/{{ ssh.user_key }}
-  register: ssh_key
-  when: ssh.user_key is defined
-
-- block:
-    - name: Save public key
-      shell: "lpass show {{ ssh.user_key }} --field 'Public Key' > /home/{{ user.name }}/.ssh/{{ ssh.user_key }}.pub"
-
-    - name: Save private key
-      shell: "lpass show {{ ssh.user_key }} --field 'Private Key' > /home/{{ user.name }}/.ssh/{{ ssh.user_key }}"
-
-    - name: Fix permissions and ownership
-      file:
-        path: "/home/{{ user.name }}/.ssh/{{ item.name }}"
-        owner: "{{ user.name }}"
-        group: "{{ user.group }}"
-        mode: "{{ item.mode }}"
-      with_items:
-        - { name: "{{ ssh.user_key }}", mode: "0600" }
-        - { name: "{{ ssh.user_key }}.pub", mode: "0644" }
-
-  when: ssh.user_key is defined and not ssh_key.stat.exists
