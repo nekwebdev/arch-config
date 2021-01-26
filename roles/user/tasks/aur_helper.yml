@@ -9,7 +9,7 @@
 
 - name: Clone ansible-aur
   git:
-    repo: https://github.com/nekwebdev/ansible-aur.git
+    repo: https://github.com/kewlfft/ansible-aur.git
     dest: "/root/.ansible/plugins/modules/aur"
     accept_hostkey: yes
     update: no
