@@ -68,6 +68,7 @@ base_packages:
   - dateutils
   - exa
   - lolcat
+  - bat
 
   # Terminal utilities
   - kitty
