@@ -30,16 +30,25 @@
         command: "git clone {{ dotfiles.url }} /home/{{ user.name }}/{{ dotfiles.destination }}"
         responses:
           Username: "{{ dotfiles.username }}"
-          password: "{{ github_password }}"
+          Password: "{{ github_password }}"
       when: dotfiles.url is defined and dotfiles.private
       become: true
       become_user: "{{ user.name }}"
 
+    - name: Set the ssh keys permissions
+      file:
+        path: "/home/{{ user.name }}/{{ dotfiles.destination }}/ssh/.ssh/{{ item.name }}"
+        mode: "{{ item.mode }}"
+      with_items:
+        - { name: "{{ ssh.key_name }}", mode: "0600" }
+        - { name: "{{ ssh.key_name }}.pub", mode: "0640" }
+      when: ssh.key_name
+
     - name: Create dotfiles directories
       file:
-        path: "{{ item }}"
+        path: "/home/{{ user.name }}/{{ item }}"
         state: directory
-      with_items: dotfiles.stowfolders
+      with_items: "{{ dotfiles.stow.folders }}"
       when: dotfiles.stow.folders is defined
       become: true
       become_user: "{{ user.name }}"
@@ -48,7 +57,7 @@
         - user
 
     - name: Install user dotfiles
-      command: "stow -t /home/{{ user.name}} *"
+      shell: "stow -t /home/{{ user.name}} *"
       args:
         chdir: "/home/{{ user.name }}/{{ dotfiles.destination }}"
       when: dotfiles.stow is defined
@@ -59,6 +68,6 @@
         - user
 
   when: not dotfiles_folder.stat.exists
-      tags:
-        - dotfiles
-        - user
+  tags:
+    - dotfiles
+    - user

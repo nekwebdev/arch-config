@@ -80,17 +80,21 @@
     name: user.name
     scope: global
     value: "{{ user.gitname }}"
+  become: true
+  become_user: "{{ user.name }}"
 
 - name: Set the global git user email
   community.general.git_config:
     name: user.email
     scope: global
     value: "{{ user.gitemail }}"
+  become: true
+  become_user: "{{ user.name }}"
 
 - name: Clone wallpapers
   git:
     repo: "{{ wallpapers.url }}"
-    dest: "/home/{{ user.name }}/Pictures/wallpapers"
+    dest: "/home/{{ user.name }}/{{ wallpapers.folder }}"
     accept_hostkey: yes
     update: no
   when: wallpapers.url is defined

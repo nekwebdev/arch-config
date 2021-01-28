@@ -2,6 +2,7 @@
 - name: Install programs from packages
   pacman:
     name: "{{ programs.packages }}"
+  when: programs.packages
   tags:
     - programs
 
@@ -10,6 +11,7 @@
     name: "{{ programs.aur }}"
   become: true
   become_user: aur_builder
+  when: programs.aur
   tags:
     - aur
-    - pass
+    - programs

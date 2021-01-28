@@ -1,23 +1,29 @@
 ---
-- name: Create local ansible modules folder
-  file:
-    path: "/root/.ansible/plugins/modules"
-    state: directory
-  tags:
-    - aur
-    - system
-
-- name: Clone ansible-aur
-  git:
-    repo: https://github.com/kewlfft/ansible-aur.git
-    dest: "/root/.ansible/plugins/modules/aur"
-    accept_hostkey: yes
-    update: no
-
 - name: Create aur_builder user
   user:
     name: aur_builder
     group: wheel
+  tags:
+    - aur
+    - system
+
+- name: Create ansible dir
+  file:
+    path: "/home/aur_builder/.ansible"
+    state: directory
+  become: true
+  become_user: aur_builder
+  tags:
+    - aur
+    - system
+
+- name: Create ansible temp dir
+  file:
+    path: "/home/aur_builder/.ansible/tmp"
+    state: directory
+    mode: "0700"
+  become: true
+  become_user: aur_builder
   tags:
     - aur
     - system
@@ -31,9 +37,11 @@
   tags:
     - aur
     - user
+    - system
 
 - name: "Install {{ aur.helper }}"
-  aur: name={{ aur.helper }}
+  aur:
+    name: "{{ aur.helper }}"
   become: true
   become_user: aur_builder
   tags:

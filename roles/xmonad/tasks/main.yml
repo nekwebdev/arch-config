@@ -2,6 +2,7 @@
 - name: Install xmonad and xmobar packages
   pacman:
     name: "{{ window_managers.xmonad.packages }}"
+  when: window_managers.xmonad.packages
   tags:
     - xmonad
 
@@ -10,6 +11,7 @@
     name: "{{ window_managers.xmonad.aur }}"
   become: true
   become_user: aur_builder
+  when: window_managers.xmonad.aur
   tags:
     - xmonad
     - aur
@@ -17,6 +19,7 @@
 - name: Install window managers package utilities
   pacman:
     name: "{{ window_managers.utils.packages }}"
+  when: window_managers.utils.packages
   tags:
     - xmonad
 
@@ -25,6 +28,7 @@
     name: "{{ window_managers.utils.aur }}"
   become: true
   become_user: aur_builder
+  when: window_managers.utils.aur
   tags:
     - xmonad
     - aur
@@ -41,3 +45,5 @@
     create: yes
   tags:
     - xmonad
+
+# sudo systemctl enable betterlockscreen@$USER

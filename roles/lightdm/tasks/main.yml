@@ -3,33 +3,64 @@
   pacman:
     name:
       - lightdm
-      - lightdm-webkit2-greeter
+      - lightdm-webkit-theme-litarvan
+  tags:
+    - lightdm
 
-- name: Install lightdm webkit greeter Aether theme
-  aur: name=lightdm-webkit-theme-aether
+- name: "Install {{ lightdm.greeter_package }}"
+  pacman:
+    name: "{{ lightdm.greeter_package }}"
+  when: lightdm.greeter_package is defined
+  tags:
+    - lightdm
+
+- name: "Install {{ lightdm.greeter_aur }}"
+  aur:
+    name: "{{ lightdm.greeter_aur }}"
   become: true
   become_user: aur_builder
+  when: lightdm.greeter_aur is defined
   tags:
+    - lightdm
     - aur
 
-- name: Enable LightDM
-  service: name=lightdm.service enabled=yes
-
-- name: Switch the greeter to webkit2
+- name: "Set the greeter to {{ lightdm.greeter_name }}"
   lineinfile:
     dest: /etc/lightdm/lightdm.conf
     regexp: "^greeter-session"
-    line: greeter-session=lightdm-webkit2-greeter
+    line: "greeter-session={{ lightdm.greeter_name }}"
     state: present
     create: yes
+  tags:
+    - lightdm
 
-- name: Switch webkit2 greeter theme to Aether
+- name: "Install {{ lightdm.theme_package }}"
+  pacman:
+    name: "{{ lightdm.theme_package }}"
+  when: lightdm.theme_package is defined
+  tags:
+    - lightdm
+
+- name: "Install {{ lightdm.theme_aur }}"
+  aur:
+    name: "{{ lightdm.theme_aur }}"
+  become: true
+  become_user: aur_builder
+  when: lightdm.theme_aur is defined
+  tags:
+    - lightdm
+    - aur
+
+- name: "Set the theme to {{ lightdm.theme_name }}"
   lineinfile:
-    dest: /etc/lightdm/lightdm-webkit2-greeter.conf
+    dest: "/etc/lightdm/{{ lightdm.greeter_conf }}"
     regexp: "^webkit_theme"
-    line: webkit_theme=lightdm-webkit-theme-aether
+    line: "webkit_theme={{ lightdm.theme_name }}"
     state: present
     create: yes
+  when: lightdm.theme_name is defined
+  tags:
+    - lightdm
 
 - name: Create background dir
   file:
@@ -37,28 +68,21 @@
     state: directory
     group: "{{ user.group }}"
     mode: "0775"
+  tags:
+    - lightdm
 
-- name: Push LightDM greeter background
+- name: Copy our wallpapers
   copy:
-    src: the-great-wave-off-kanagawa-wallpaper.jpg
-    dest: /usr/share/backgrounds/the-great-wave-off-kanagawa-wallpaper.jpg
+    src: "/home/{{ user.name }}/{{ wallpapers.folder }}"
+    dest: /usr/share/backgrounds/wallpapers
     user: "{{ user.name }}"
     group: "{{ user.group }}"
     mode: "0664"
-# - name: Specify LightDM greeter background
-#   lineinfile: dest=/etc/lightdm/lightdm-gtk-greeter.conf
-#     regexp="^background="
-#     state=present
-#     line="background=/usr/share/backgrounds/onosendai.jpg"
+  when: wallpapers.folder is defined
+  tags:
+    - lightdm
 
-# - name: Hide user images
-#   lineinfile: dest=/etc/lightdm/lightdm-gtk-greeter.conf
-#     regexp="^hide-user-image="
-#     state=present
-#     line="hide-user-image=true"
-
-# - name: Force LightDM greeter theme
-#   lineinfile: dest=/usr/share/xgreeters/lightdm-gtk-greeter.desktop
-#     regexp="^Exec="
-#     state=present
-#     line="Exec=env GTK_THEME=Adwaita:dark lightdm-gtk-greeter"
+- name: Enable LightDM
+  service: name=lightdm.service enabled=yes
+  tags:
+    - lightdm

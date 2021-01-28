@@ -11,6 +11,7 @@
     - name: github_password
       prompt: "Enter github account password for private dotfiles and password-store"
       private: yes
+      confirm: yes
 
   roles:
     - { role: system, tags: ["system"] }

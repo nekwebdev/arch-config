@@ -46,9 +46,23 @@
   tags:
     - tlp
 
+- name: Set sata power to max for btrfs
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^SATA_LINKPWR_ON_BAT"
+    line: "SATA_LINKPWR_ON_BAT=max_performance"
+    state: present
+
 - name: Enable TLP
   service:
     name: tlp.service
+    enabled: yes
+  tags:
+    - tlp
+
+- name: Enable NetworkManager dispatcher
+  service:
+    name: NetworkManager-dispatcher.service
     enabled: yes
   tags:
     - tlp

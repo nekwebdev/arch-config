@@ -16,6 +16,7 @@ hostname: thehost
 
 wallpapers:
   url: https://gitlab.com/dwt1/wallpapers.git
+  folder: Pictures/wallpapers
 
 # dotfiles, I am using stow so the playbook makes sure to create the folders and sym links first
 dotfiles:
@@ -25,11 +26,14 @@ dotfiles:
   username: nekwebdev # EDIT ME, must be the github account username
   stow:
     folders:
-      - /home/{{ user.name }}/.xmonad
-      - /home/{{ user.name }}/.config/fish
-      - /home/{{ user.name }}/.config/kitty
-      - /home/{{ user.name }}/.config/gtk-3.0
-      - /home/{{ user.name }}/.config/VSCodium/User
+      - .xmonad
+      - .config/fish
+      - .config/kitty
+      - .config/gtk-3.0
+      - .config/VSCodium/User
+      - .config/dunst
+      - .config/volumeicon
+      - .config/picom
 
 pass:
   url: https://github.com/nekwebdev/.password-store.git # EDIT ME
@@ -39,6 +43,7 @@ pass:
 
 # sshd
 ssh:
+  key_name: id_rsa # EDIT ME
   port: 22
   max_tries: 3
   grace_time: 20
@@ -59,10 +64,11 @@ aur:
   helper: paru-bin
   packages:
     - starship-bin
-    - shell-color-script
+    - shell-color-scripts
 
 base_packages:
   # Base utilities
+  - gdisk
   - rsync
   - moreutils
   - dateutils
@@ -164,6 +170,15 @@ libinput:
 
 display_manager: lightdm
 
+lightdm:
+  greeter_package: lightdm-webkit2-greeter
+  # greeter_aur:
+  greeter_name: lightdm-webkit2-greeter
+  greeter_conf: lightdm-webkit2-greeter.conf
+  theme_package: lightdm-webkit-theme-litarvan
+  # theme_aur:
+  theme_name: litarvan
+
 desktop_environment: xmonad
 
 xorg:
@@ -177,15 +192,19 @@ window_managers:
   utils:
     packages:
       - dmenu
-      - picom
       - nitrogen
-      - lxsessions
+      - lxsession
       - lxappearance
       - stalonetray
       - blueman
       - pavucontrol
       - volumeicon
-    aur: []
+      - xbindkeys
+      - dunst
+    aur:
+      - ncpamixer
+      - picom-jonaburg-git
+      - betterlockscreen
   xmonad:
     packages:
       - xmonad

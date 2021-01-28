@@ -49,9 +49,9 @@
   tags:
     - aur
 
-- name: Install battop
-  aur: name=battop
-  become: true
-  become_user: aur_builder
-  tags:
-    - aur
+# - name: Install battop
+# aur: name=battop
+# become: true
+# become_user: aur_builder
+# tags:
+# - aur
