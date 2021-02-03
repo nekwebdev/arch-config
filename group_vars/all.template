@@ -27,7 +27,6 @@ dotfiles:
   stow:
     folders:
       - .xmonad
-      - .config/fish
       - .config/kitty
       - .config/gtk-3.0
       - .config/VSCodium/User
@@ -39,7 +38,7 @@ pass:
   url: https://github.com/nekwebdev/.password-store.git # EDIT ME
   destination: ".password-store"
   private: True
-  username: nekwebdev
+  username: nekwebdev # EDIT ME
 
 # sshd
 ssh:
@@ -75,6 +74,7 @@ base_packages:
   - exa
   - lolcat
   - bat
+  - vi
 
   # Terminal utilities
   - kitty
@@ -184,14 +184,14 @@ desktop_environment: xmonad
 xorg:
   theme:
     packages:
-      - xcursor-simplesoft
+      - xcursor-simpleandsoft
     aur:
-      - nordic-theme.git
+      - nordic-theme-git
 
 window_managers:
   utils:
     packages:
-      - dmenu
+      - xorg-xrdg
       - nitrogen
       - lxsession
       - lxappearance
@@ -210,7 +210,9 @@ window_managers:
       - xmonad
       - xmonad-contrib
       - xmobar
-    aur: []
+      - rofi
+    aur:
+      -rofi-dmenu
 
 programs:
   packages:

@@ -34,5 +34,6 @@
         when: "desktop_environment == 'xmonad'",
       }
     - { role: programs, tags: ["programs"] }
+    - { role: virtualbox, tags: ["virtualbox"] }
     - { role: laptop, tags: ["laptop"] }
     - { role: snapper, tags: ["snapper"] }

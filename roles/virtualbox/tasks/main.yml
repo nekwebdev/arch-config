@@ -1,0 +1,24 @@
+---
+- name: Install VirtualBox and dependencies
+  pacman:
+    name:
+      - net-tools
+      - virtualbox
+      - virtualbox-guest-iso
+      - virtualbox-host-modules-arch
+      - vagrant
+    state: present
+  tags:
+    - virtualbox
+
+# - name: Install VirtualBox extensions
+#   aur: name=virtualbox-ext-oracle user={{ user.name }}
+#   tags:
+#     - virtualbox
+#     - aur
+
+- name: Add the user to vboxusers group
+  user: name={{ user.name }} groups=vboxusers append=yes
+  tags:
+    - virtualbox
+    - user

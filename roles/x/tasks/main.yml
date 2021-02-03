@@ -86,6 +86,16 @@
   pacman: name=perl-file-mimeinfo state=present
   tags:
     - x
+
+- name: Copy gtk2 config
+  copy:
+    src: "/home/{{ user.name }}/.gtkrc-2.0.mine"
+    dest: "/home/{{ user.name }}/.gtkrc-2.0"
+  become: true
+  become_user: "{{ user.name }}"
+  tags:
+    - x
+
     
 - include: unclutter.yml
 - include: autorandr.yml

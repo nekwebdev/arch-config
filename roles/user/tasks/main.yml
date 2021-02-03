@@ -101,7 +101,12 @@
   become: true
   become_user: "{{ user.name }}"
   
-
+- name: Clone ansible-aur for the new user
+  git:
+    repo: https://github.com/kewlfft/ansible-aur.git
+    dest: "/home/{{ user.name }}/.ansible/plugins/modules/aur"
+    accept_hostkey: yes
+    update: no
 # setup sudo for this user
 - include: sudo.yml
 

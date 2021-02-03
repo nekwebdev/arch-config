@@ -48,7 +48,7 @@
 
 - name: Set sata power to max for btrfs
   lineinfile:
-    path: /etc/ssh/sshd_config
+    path: /etc/tlp.conf
     regexp: "^SATA_LINKPWR_ON_BAT"
     line: "SATA_LINKPWR_ON_BAT=max_performance"
     state: present

@@ -29,6 +29,7 @@
     dest: /etc/lightdm/lightdm.conf
     regexp: "^greeter-session"
     line: "greeter-session={{ lightdm.greeter_name }}"
+    insertafter: "\[Seat:\*\]"
     state: present
     create: yes
   tags:
@@ -75,7 +76,7 @@
   copy:
     src: "/home/{{ user.name }}/{{ wallpapers.folder }}"
     dest: /usr/share/backgrounds/wallpapers
-    user: "{{ user.name }}"
+    owner: "{{ user.name }}"
     group: "{{ user.group }}"
     mode: "0664"
   when: wallpapers.folder is defined
