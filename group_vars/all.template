@@ -133,7 +133,7 @@ base_fonts:
   # - terminus-font
   # - tex-gyre-fonts
   # - ttf-caladea
-  # - ttf-carlito
+  - ttf-fira-code
   - ttf-dejavu
   - ttf-font-awesome
   - powerline-fonts
