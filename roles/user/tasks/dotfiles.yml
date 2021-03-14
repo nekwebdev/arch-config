@@ -56,6 +56,14 @@
         - dotfiles
         - user
 
+    - name: Remove current gitconfig
+      file:
+        path: "/home/{{ user.name }}/.gitconfig"
+        state: absent
+      tags:
+        - dotfiles
+        - user
+
     - name: Install user dotfiles
       shell: "stow -t /home/{{ user.name}} *"
       args:

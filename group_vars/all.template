@@ -1,5 +1,7 @@
 ---
 # make sure to configure the next sections
+laptop: False
+
 user:
   name: mememe # EDIT ME
   uid: 1000
@@ -12,7 +14,7 @@ user:
     dir: log
     rotate: 8
 
-hostname: thehost
+hostname: thehost # EDIT ME
 
 wallpapers:
   url: https://gitlab.com/dwt1/wallpapers.git
@@ -33,6 +35,8 @@ dotfiles:
       - .config/dunst
       - .config/volumeicon
       - .config/picom
+      - Documents/Dev/oj
+      - Documents/Dev/matalab
 
 pass:
   url: https://github.com/nekwebdev/.password-store.git # EDIT ME
@@ -191,7 +195,7 @@ xorg:
 window_managers:
   utils:
     packages:
-      - xorg-xrdg
+      - xorg-xrdb
       - nitrogen
       - lxsession
       - lxappearance

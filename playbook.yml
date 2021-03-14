@@ -35,5 +35,5 @@
       }
     - { role: programs, tags: ["programs"] }
     - { role: virtualbox, tags: ["virtualbox"] }
-    - { role: laptop, tags: ["laptop"] }
+    - { role: laptop, tags: ["laptop"], when: "laptop|bool == True" }
     - { role: snapper, tags: ["snapper"] }

@@ -27,9 +27,8 @@
 - name: "Set the greeter to {{ lightdm.greeter_name }}"
   lineinfile:
     dest: /etc/lightdm/lightdm.conf
-    regexp: "^greeter-session"
+    regexp: '^greeter-session^'
     line: "greeter-session={{ lightdm.greeter_name }}"
-    insertafter: "\[Seat:\*\]"
     state: present
     create: yes
   tags:
@@ -72,14 +71,15 @@
   tags:
     - lightdm
 
-- name: Copy our wallpapers
-  copy:
-    src: "/home/{{ user.name }}/{{ wallpapers.folder }}"
+- name: Clone wallpapers for lightdm
+  git:
+    repo: "{{ wallpapers.url }}"
     dest: /usr/share/backgrounds/wallpapers
-    owner: "{{ user.name }}"
-    group: "{{ user.group }}"
-    mode: "0664"
-  when: wallpapers.folder is defined
+    accept_hostkey: yes
+    update: no
+  when: wallpapers.url is defined
+  become: true
+  become_user: "{{ user.name }}"
   tags:
     - lightdm
 
